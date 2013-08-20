@@ -1,10 +1,8 @@
-# Configure Rails Environment
-ENV["RAILS_ENV"] = "test"
-
-require File.expand_path("../dummy/config/environment.rb",  __FILE__)
+ENV["RAILS_ENV"] ||= "test"
+require File.expand_path("../dummy/config/environment", __FILE__)
 require "rails/test_help"
-require "minitest/spec"
-require "rack/test"
+require "minitest/rails"
+require "minitest/pride"
 
 Rails.backtrace_cleaner.remove_silencers!
 
