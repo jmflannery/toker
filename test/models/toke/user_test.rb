@@ -4,7 +4,7 @@ module Toke
 
   describe User do
 
-    let(:valid_params) {{ username: 'ichiro' }}
+    let(:valid_params) {{ username: 'ichiro', password: 'suzuki', password_confirmation: 'suzuki' }}
 
     it "is valid with valid params" do
       user = User.new(valid_params)
