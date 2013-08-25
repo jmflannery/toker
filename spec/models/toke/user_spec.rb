@@ -1,4 +1,4 @@
-require 'test_helper'
+require 'spec_helper'
 
 module Toke
 
@@ -9,13 +9,12 @@ module Toke
     subject { User.new(valid_params) }
 
     it "is valid with valid params" do
-      subject.must_be :valid?
+      expect(subject).to be_valid
     end
 
-    it "converts to JSON" do
+    it "converts to JSON like hash" do
       subject.save
-      expected = { id: subject.id, username: subject.username }
-      subject.as_json.must_equal expected
+      expect(subject.as_json).to eq id: subject.id, username: subject.username
     end
   end
 end
