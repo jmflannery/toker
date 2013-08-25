@@ -1,4 +1,4 @@
-require 'test_helper'
+require 'spec_helper'
 
 OUTER_APP = Rack::Builder.parse_file(File.expand_path('../../dummy/config.ru', __FILE__)).first
 
@@ -9,6 +9,6 @@ describe 'Create User' do
 
   it 'must create a user' do
     post "/toke/users", { user: { username: "jack", password: "secret", password_confirmation: "secret" }}
-    assert last_response.status == 201
+    expect(last_response.status).to eq 201
   end
 end
