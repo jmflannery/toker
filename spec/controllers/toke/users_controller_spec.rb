@@ -1,4 +1,4 @@
-require 'test_helper'
+require 'spec_helper'
 
 module Toke
 
@@ -12,16 +12,14 @@ module Toke
 
         it "it responds with 201" do
           post :create, user: user_attrs, use_route: 'toke'
-          response.status.must_equal 201
+          expect(response.status).to equal 201
         end
 
         it "creates a user" do
-          user = Minitest::Mock.new
-          User.stub(:new, user) do
-            user.expect(:save, :ret_val)
-            post :create, user: user_attrs, use_route: 'toke'
-          end
-          user.verify
+          user = mock('user')
+          User.stub(:new).with(user_attrs.stringify_keys).and_return(user)
+          user.should_receive(:save).and_return(true)
+          post :create, user: user_attrs, use_route: 'toke'
         end
       end
 
@@ -31,7 +29,7 @@ module Toke
 
         it "it responds with 500" do
           post :create, user: user_attrs, use_route: 'toke'
-          response.status.must_equal 500
+          expect(response.status).to equal 500
         end
       end
     end
