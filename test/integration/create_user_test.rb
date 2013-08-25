@@ -8,7 +8,7 @@ describe 'Create User' do
   let(:app) { OUTER_APP }
 
   it 'must create a user' do
-    post "/toke/users", name: "jack", password: "secret", password_confirmation: "secret"
-    assert last_response.ok?
+    post "/toke/users", { user: { username: "jack", password: "secret", password_confirmation: "secret" }}
+    assert last_response.status == 201
   end
 end
