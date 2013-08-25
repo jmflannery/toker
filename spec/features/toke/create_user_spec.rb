@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-OUTER_APP = Rack::Builder.parse_file(File.expand_path('../../dummy/config.ru', __FILE__)).first
+OUTER_APP = Rack::Builder.parse_file(File.expand_path('../../../dummy/config.ru', __FILE__)).first
 
 describe 'Create User' do
   include Rack::Test::Methods
