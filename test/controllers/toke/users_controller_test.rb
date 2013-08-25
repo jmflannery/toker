@@ -14,6 +14,15 @@ module Toke
           post :create, user: user_attrs, use_route: 'toke'
           response.status.must_equal 201
         end
+
+        it "creates a user" do
+          user = Minitest::Mock.new
+          User.stub(:new, user) do
+            user.expect(:save, :ret_val)
+            post :create, user: user_attrs, use_route: 'toke'
+          end
+          user.verify
+        end
       end
 
       describe "given invalid atributes" do

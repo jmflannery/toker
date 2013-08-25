@@ -6,7 +6,11 @@ module Toke
 
     def create
       user = User.new(person_params)
-      head user.valid? ? 201 : 500
+      if user.save
+        head 201
+      else
+        head 500
+      end
     end
 
     def person_params
