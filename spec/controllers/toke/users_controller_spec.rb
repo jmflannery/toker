@@ -16,7 +16,7 @@ module Toke
         end
 
         it "creates a user" do
-          user = mock('user')
+          user = double('user')
           User.stub(:new).with(user_attrs.stringify_keys).and_return(user)
           user.should_receive(:save).and_return(true)
           post :create, user: user_attrs, use_route: 'toke'
