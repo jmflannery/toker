@@ -4,6 +4,8 @@ module Toke
 
   describe UsersController do
 
+    let(:controller) { @controller }
+
     describe "POST create" do
 
       describe "given valid atributes" do
@@ -17,7 +19,7 @@ module Toke
           user.stubs(:as_json)
         }
 
-        it "it responds with 201" do
+        it "responds with 201" do
           post :create, user: user_attrs, use_route: 'toke'
           response.status.must_equal 201
         end
@@ -30,8 +32,8 @@ module Toke
         it "renders the user as json" do
           json = mock('json')
           user.expects(:as_json).returns(json)
-          @controller.expects(:render)
-          @controller.expects(:render).with(json: json, status: 201)
+          controller.expects(:render)
+          controller.expects(:render).with(json: json, status: 201)
           post :create, user: user_attrs, use_route: 'toke'
         end
       end
@@ -46,9 +48,14 @@ module Toke
           user.stubs(:save).returns(false)
         }
 
-        it "it responds with 500" do
+        it "responds with 500" do
           post :create, user: user_attrs, use_route: 'toke'
           response.status.must_equal 500
+        end
+
+        it "responds with a blank body" do
+          post :create, user: user_attrs, use_route: 'toke'
+          response.body.must_be :blank?
         end
       end
     end
