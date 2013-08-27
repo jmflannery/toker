@@ -11,11 +11,5 @@ module Toke
     it "is valid with valid params" do
       subject.must_be :valid?
     end
-
-    it "converts to JSON" do
-      subject.save
-      expected = { id: subject.id, username: subject.username }
-      subject.as_json.must_equal expected
-    end
   end
 end
