@@ -10,13 +10,9 @@ describe 'Create User' do
 
   describe 'with valid user attributes' do
 
-    it 'is successfull' do
+    it 'returns the user as JSON with 201 status' do
       post "/toke/users", user: user_attrs
       last_response.status.must_equal 201
-    end
-
-    it 'returns the user as JSON' do
-      post "/toke/users", user: user_attrs
       last_response.body.must_include "\"username\":\"jack\""
     end
   end
