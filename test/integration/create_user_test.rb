@@ -6,9 +6,18 @@ describe 'Create User' do
   include Rack::Test::Methods
 
   let(:app) { OUTER_APP }
+  let(:user_attrs) {{ username: "jack", password: "secret", password_confirmation: "secret" }}
 
-  it 'must create a user' do
-    post "/toke/users", { user: { username: "jack", password: "secret", password_confirmation: "secret" }}
-    assert last_response.status == 201
+  describe 'with valid user attributes' do
+
+    it 'is successfull' do
+      post "/toke/users", user: user_attrs
+      last_response.status.must_equal 201
+    end
+
+    it 'returns the user as JSON' do
+      post "/toke/users", user: user_attrs
+      last_response.body.must_include "\"username\":\"jack\""
+    end
   end
 end
