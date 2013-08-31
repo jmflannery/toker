@@ -1,4 +1,4 @@
-require 'test_helper'
+require 'spec_helper'
 
 module Toke
 
@@ -9,7 +9,7 @@ module Toke
     subject { User.new(valid_params) }
 
     it "is valid with valid params" do
-      subject.must_be :valid?
+      expect(subject).to be_valid
     end
   end
 end

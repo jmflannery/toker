@@ -1,6 +1,6 @@
-require 'test_helper'
+require 'spec_helper'
 
-OUTER_APP = Rack::Builder.parse_file(File.expand_path('../../dummy/config.ru', __FILE__)).first
+OUTER_APP = Rack::Builder.parse_file(File.expand_path('../../../dummy/config.ru', __FILE__)).first
 
 describe 'Create User' do
   include Rack::Test::Methods
@@ -12,8 +12,8 @@ describe 'Create User' do
 
     it 'returns the user as JSON with 201 status' do
       post "/toke/users", user: user_attrs
-      last_response.status.must_equal 201
-      last_response.body.must_include "\"username\":\"jack\""
+      expect(last_response.status).to eq 201
+      expect(last_response.body).to match /^{"id":\d+,"username":"jack","password_digest":"\S+","created_at":"\S+","updated_at":"\S+"}$/
     end
   end
 end

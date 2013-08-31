@@ -1,0 +1,27 @@
+  [1m[36m (3.1ms)[0m  [1mCREATE TABLE "schema_migrations" ("version" character varying(255) NOT NULL) [0m
+  [1m[35m (1.9ms)[0m  CREATE UNIQUE INDEX "unique_schema_migrations" ON "schema_migrations" ("version")
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+  [1m[36mSQL (1.6ms)[0m  [1mCREATE EXTENSION IF NOT EXISTS "plpgsql"[0m
+  [1m[35m (0.5ms)[0m  SELECT version FROM "schema_migrations"
+  [1m[36m (0.8ms)[0m  [1mINSERT INTO "schema_migrations" (version) VALUES ('0')[0m
+  [1m[35mActiveRecord::SchemaMigration Load (0.3ms)[0m  SELECT "schema_migrations".* FROM "schema_migrations"
+  [1m[36mActiveRecord::SchemaMigration Load (0.8ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Migrating to CreateTokeUsers (20130822225749)
+  [1m[35m (0.2ms)[0m  BEGIN
+  [1m[36m (26.7ms)[0m  [1mCREATE TABLE "toke_users" ("id" serial primary key, "username" character varying(255), "password_digest" character varying(255), "created_at" timestamp, "updated_at" timestamp) [0m
+  [1m[35mSQL (1.7ms)[0m  INSERT INTO "schema_migrations" ("version") VALUES ($1)  [["version", "20130822225749"]]
+  [1m[36m (0.9ms)[0m  [1mCOMMIT[0m
+  [1m[35mActiveRecord::SchemaMigration Load (0.1ms)[0m  SELECT "schema_migrations".* FROM "schema_migrations"
+  [1m[36mActiveRecord::SchemaMigration Load (0.4ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Migrating to CreateTokeUsers (20130822231001)
+  [1m[35m (0.2ms)[0m  BEGIN
+  [1m[36m (8.8ms)[0m  [1mCREATE TABLE "toke_users" ("id" serial primary key, "username" character varying(255), "password_digest" character varying(255), "created_at" timestamp, "updated_at" timestamp) [0m
+PG::DuplicateTable: ERROR:  relation "toke_users" already exists
+: CREATE TABLE "toke_users" ("id" serial primary key, "username" character varying(255), "password_digest" character varying(255), "created_at" timestamp, "updated_at" timestamp) 
+  [1m[35m (0.2ms)[0m  ROLLBACK
+  [1m[36m (0.2ms)[0m  [1mBEGIN[0m
+  [1m[35mSQL (11.2ms)[0m  INSERT INTO "toke_users" ("created_at", "password_digest", "updated_at", "username") VALUES ($1, $2, $3, $4) RETURNING "id"  [["created_at", Fri, 23 Aug 2013 01:24:45 UTC +00:00], ["password_digest", "$2a$10$kuCp.fm/ZoX1qgHiD3rmyOL7UUae2rhH62q0qwctF8kOSvFaPYXwG"], ["updated_at", Fri, 23 Aug 2013 01:24:45 UTC +00:00], ["username", "jack"]]
+  [1m[36m (0.5ms)[0m  [1mCOMMIT[0m
+  [1m[36m (0.2ms)[0m  [1mBEGIN[0m
+  [1m[35mSQL (3.5ms)[0m  INSERT INTO "toke_users" ("created_at", "password_digest", "updated_at", "username") VALUES ($1, $2, $3, $4) RETURNING "id"  [["created_at", Fri, 23 Aug 2013 01:30:57 UTC +00:00], ["password_digest", "$2a$10$FrUxAhzo563IgA3somFuQe1U6TYpNKrfdmVXcMTytDEzov6auiivC"], ["updated_at", Fri, 23 Aug 2013 01:30:57 UTC +00:00], ["username", "ichiro"]]
+  [1m[36m (6.6ms)[0m  [1mCOMMIT[0m
