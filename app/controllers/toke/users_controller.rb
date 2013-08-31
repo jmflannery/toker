@@ -7,7 +7,7 @@ module Toke
     def create
       user = User.new(person_params)
       if user.save
-        head 201
+        render json: user, status: 201
       else
         head 500
       end
