@@ -13,6 +13,12 @@ module Toke
       end
     end
 
+    def index
+      render json: User.all
+    end
+
+    private
+
     def person_params
       params.require(:user).permit(:username, :password, :password_confirmation)
     end

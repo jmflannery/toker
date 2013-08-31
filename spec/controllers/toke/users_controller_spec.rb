@@ -46,5 +46,23 @@ module Toke
         end
       end
     end
+
+    describe "GET index" do
+
+      it "returns 200 status" do
+        json = double('json')
+        User.should_receive(:all).and_return(json)
+        get :index, use_route: 'toke'
+        expect(response.status).to eq 200
+      end
+
+      it "gets renders all the users as JSON" do
+        json = double('json')
+        User.should_receive(:all).and_return(json)
+        controller.should_receive(:render).with(json: json)
+        controller.should_receive(:render)
+        get :index, use_route: 'toke'
+      end
+    end
   end
 end
