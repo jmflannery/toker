@@ -16,21 +16,20 @@ describe "User" do
       it 'returns the user as JSON with 201 status' do
         post "/toke/users", user: user_attrs
         expect(last_response.status).to eq 201
-        expect(last_response.body).to match /^{"id":\d+,"username":"jack","password_digest":"\S+","created_at":"\S+","updated_at":"\S+"}$/
+        expect(last_response.body).to match /^{"user":{"id":\d+,"username":"jack"}}$/
       end
     end
   end
 
   describe 'Index' do
     
-    let(:user1) { Toke::User.create(username: 'mark', password: 'secret', password_confirmation: 'secret') }
-    let(:user2) { Toke::User.create(username: 'anthony', password: 'secret', password_confirmation: 'secret') }
-    let(:users) { [user1, user2] }
+    let!(:user1) { Toke::User.create(username: 'mark', password: 'secret', password_confirmation: 'secret') }
+    let!(:user2) { Toke::User.create(username: 'anthony', password: 'secret', password_confirmation: 'secret') }
 
     it "gets all users as JSON with 200 status" do
       get "/toke/users"
       expect(last_response.status).to eq 200
-      expect(last_response.body).to eq users.as_json
+      expect(last_response.body).to match /^{"users":\[{"id":\d+,"username":"mark"},{"id":\d+,"username":"anthony"}\]}/
     end
   end
 end
