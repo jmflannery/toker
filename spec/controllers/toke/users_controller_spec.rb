@@ -64,5 +64,16 @@ module Toke
         get :index, use_route: 'toke'
       end
     end
+
+    describe "GET show" do
+
+      it "finds and renders the given user" do
+        user = double('user')
+        User.should_receive(:find).with('22').and_return(user)
+        controller.should_receive(:render).with(json: user)
+        controller.should_receive(:render)
+        get :show, id: 22, use_route: 'toke'
+      end
+    end
   end
 end
