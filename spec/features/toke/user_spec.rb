@@ -31,7 +31,18 @@ module Toke
       it "gets all users as JSON with 200 status" do
         get "/toke/users"
         expect(last_response.status).to eq 200
-        expect(last_response.body).to match /^{"users":\[{"id":\d+,"username":"mark"},{"id":\d+,"username":"anthony"}\]}/
+        expect(last_response.body).to match /^{"users":\[{"id":\d+,"username":"mark"},{"id":\d+,"username":"anthony"}\]}$/
+      end
+    end
+
+    describe 'Show' do
+
+      let!(:user1) { User.create(username: 'mark', password: 'secret', password_confirmation: 'secret') }
+
+      it "gets the user as JSON with 200 status" do
+        get "/toke/users/#{user1.id}"
+        expect(last_response.status).to eq 200
+        expect(last_response.body).to match /^{"user":{"id":#{user1.id},"username":"mark"}}$/
       end
     end
   end
