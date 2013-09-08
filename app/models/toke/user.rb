@@ -7,11 +7,7 @@ module Toke
 
     has_one :token
 
-    after_create :generate_token
-
-    private
-
-    def generate_token
+    def toke
       create_token
     end
   end

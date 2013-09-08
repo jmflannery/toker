@@ -4,7 +4,7 @@ module Toke
     def create
       user = User.find_by_username(params[:session][:username])   
       if user && user.authenticate(params[:session][:password])
-        user.token.toke
+        user.toke
         render json: user.token, status: 201
       end
     end

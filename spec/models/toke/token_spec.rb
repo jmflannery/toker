@@ -17,7 +17,7 @@ module Toke
       expect(subject.key).to match /\S{32}/
     end
 
-    it "sets the token expiration" do
+    it "sets the token to expire in 4 hours" do
       expect(subject.reload.expires_at).to eq (now + 4.hours).to_formatted_s(:rfc822)
     end
   end

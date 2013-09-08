@@ -45,9 +45,14 @@ module Toke
       expect(FactoryGirl.build(:user, password: tolong, password_confirmation: tolong)).to have(1).errors_on(:password)
     end
 
-    it "has a token initially expired" do
+    it "has a nil token initially" do
+      expect(subject.token).to be_nil
+    end
+
+    it "generates a token with 32 digit key" do
       subject.save
-      expect(subject.token.expires_at).to be < Time.zone.now
+      subject.toke
+      expect(subject.reload.token.key).to match /\S{32}/      
     end
   end
 end
