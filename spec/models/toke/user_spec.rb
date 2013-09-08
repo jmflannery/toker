@@ -44,5 +44,10 @@ module Toke
       tolong = 's' * 51
       expect(FactoryGirl.build(:user, password: tolong, password_confirmation: tolong)).to have(1).errors_on(:password)
     end
+
+    it "has a token initially expired" do
+      subject.save
+      expect(subject.token.expires_at).to be < Time.zone.now
+    end
   end
 end
