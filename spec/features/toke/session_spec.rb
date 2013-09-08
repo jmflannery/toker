@@ -20,7 +20,7 @@ describe "Sessions" do
         Time.stub(:now).and_return(now)
         post 'toke/sessions', sesh_attrs
         expect(response.status).to be 201
-        expect(response.body).to match /^{"token":{"token":"\S{32}","expires_at":#{(now + 4.hours)}}}$/
+        expect(response.body).to match /^{"token":{"id":#{user.token.id},"key":"#{user.token.key}","expires_at":#{(now + 4.hours)}}}$/
       end
     end
   end
