@@ -1,19 +1,13 @@
 module Toke
   class Token < ActiveRecord::Base
     belongs_to :user
-    before_create :expire
+    before_create :toke
+
+    private
 
     def toke
       generate_token
       set_expiry
-      save
-    end
-
-    private
-
-    def expire
-      self.expires_at = Time.now
-      self.key = nil
     end
 
     def generate_token
