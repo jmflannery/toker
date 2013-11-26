@@ -13,7 +13,7 @@ module Toke
 
         it "it responds with 201" do
           post :create, user: user_attrs, use_route: 'toke'
-          expect(response.status).to equal 201
+          expect(response.status).to eq 201
         end
 
         it "creates a user" do

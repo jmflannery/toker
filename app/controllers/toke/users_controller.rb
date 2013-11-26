@@ -1,5 +1,3 @@
-require_dependency "toke/application_controller"
-
 module Toke
 
   class UsersController < ApplicationController
