@@ -3,6 +3,10 @@ module Toke
     belongs_to :user
     before_create :toke
 
+    def expired?
+      Time.now > self.expires_at
+    end
+
     private
 
     def toke

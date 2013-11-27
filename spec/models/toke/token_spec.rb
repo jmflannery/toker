@@ -20,5 +20,15 @@ module Toke
     it "sets the token to expire in 4 hours" do
       expect(subject.reload.expires_at).to eq (now + 4.hours).to_formatted_s(:rfc822)
     end
+
+    it "is expired if the current time is greater than the expires_at time" do
+      subject.update_attribute(:expires_at, 1.second.ago)
+      expect(subject).to be_expired
+    end
+
+    it "is not expired until the expires_at time is reached" do
+      subject.update_attribute(:expires_at, 1.second.from_now)
+      expect(subject).to_not be_expired
+    end
   end
 end
