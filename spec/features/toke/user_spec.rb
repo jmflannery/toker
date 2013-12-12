@@ -11,14 +11,31 @@ module Toke
 
     describe 'Create' do
 
+      let(:user) { FactoryGirl.create(:user) }
+      let(:token) { FactoryGirl.create(:token, user: user) }
       let(:user_attrs) {{ username: "jack", password: "secret", password_confirmation: "secret" }}
 
-      describe 'with valid user attributes' do
+      context 'with a valid Toke key in the header' do
 
-        it 'returns the user as JSON with 201 status' do
-          post "/toke/users", user: user_attrs
-          expect(last_response.status).to eq 201
-          expect(last_response.body).to match /^{"user":{"id":\d+,"username":"jack"}}$/
+        describe 'with valid user attributes' do
+
+          it 'returns the user as JSON with 201 status' do
+            header "X-Toke-Key", token.key
+            post "/toke/users", user: user_attrs
+            expect(last_response.status).to eq 201
+            expect(last_response.body).to match /^{"user":{"id":\d+,"username":"jack"}}$/
+          end
+        end
+      end
+
+      context 'without a valid Toke key in the header' do
+
+        describe 'with valid user attributes' do
+
+          it 'returns 401 Unauthorized' do
+            post "/toke/users", user: user_attrs
+            expect(last_response.status).to eq 401
+          end
         end
       end
     end
