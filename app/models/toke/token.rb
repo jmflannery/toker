@@ -3,6 +3,8 @@ module Toke
     belongs_to :user
     before_create :toke
 
+    scope :active, -> { where("expires_at >= ?", Time.now) }
+
     def expired?
       Time.now > self.expires_at
     end
