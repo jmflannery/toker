@@ -16,7 +16,7 @@ module Toke
           post :create, session: sesh, use_route: 'toke'
           user.reload
           expect(response.body).to match \
-            /^{"token":{"id":#{user.token.id},"key":"#{user.token.key}","expires_at":"#{user.token.expires_at.to_s(:db)}"}}$/
+            /^{"token":{"id":#{user.token.id},"key":"#{user.token.key}","expires_at":"#{user.token.expires_at.to_s(:db)}","user_id":#{user.id}}}$/
         end
       end
     end

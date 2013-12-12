@@ -25,7 +25,7 @@ describe "Sessions" do
         user.reload
         expect(last_response.status).to be 201
         expect(last_response.body).to match \
-          /^{"token":{"id":#{user.token.id},"key":"#{user.token.key}","expires_at":"#{(now + 4.hours).to_s(:db)}"}}$/
+          /^{"token":{"id":#{user.token.id},"key":"#{user.token.key}","expires_at":"#{(now + 4.hours).to_s(:db)}","user_id":#{user.id}}}$/
       end
     end
   end
