@@ -6,6 +6,8 @@ module Toke
       if user && user.authenticate(params[:session][:password])
         user.toke
         render json: user, status: 201
+      else
+        head :unauthorized
       end
     end
 

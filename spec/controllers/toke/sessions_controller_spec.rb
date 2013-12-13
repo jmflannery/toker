@@ -12,9 +12,25 @@ module Toke
 
         let(:sesh) {{ username: user.username, password: 'secret' }}
 
+        it "returns 201 Created" do
+          post :create, session: sesh, use_route: 'toke'
+          expect(response.status).to eq 201
+        end
+
         it "returns the authenticated user with embedded token in JSON format" do
           post :create, session: sesh, use_route: 'toke'
           expect(response.body).to eq UserSerializer.new(user.reload).to_json
+        end
+      end
+
+      context 'given invalid credentials' do
+
+        let(:sesh) {{ username: user.username, password: 'wrongpw' }}
+
+        it "returns 401 Unauthorized" do
+          post :create, session: sesh, use_route: 'toke'
+          expect(response.status).to eq 401
+          expect(response.body).to be_blank
         end
       end
     end
