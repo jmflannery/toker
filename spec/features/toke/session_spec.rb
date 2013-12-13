@@ -8,7 +8,7 @@ describe "Sessions" do
 
   let(:app) { OUTER_APP }
 
-  describe "create Session" do
+  describe "Create" do
 
     context "given valid parameters" do
 
@@ -24,14 +24,18 @@ describe "Sessions" do
     end
   end
 
-  describe "destroy Session" do
+  describe "Destroy" do
 
     let(:current_user) { FactoryGirl.create(:user) }
     let(:token) { FactoryGirl.create(:token, user: current_user) }
 
-    it "destroys the token and returns 204 No Content" do
-      delete "toke/sessions/#{token.id}"
-      expect(Toke::Token.exists?(token.id)).to be_false
+    context 'with a valid Toke key in the header' do
+
+      it "destroys the token and returns 204 No Content" do
+        header "X-Toke-Key", token.key
+        delete "toke/sessions/#{token.id}"
+        expect(Toke::Token.exists?(token.id)).to be_false
+      end
     end
   end
 end

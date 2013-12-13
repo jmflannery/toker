@@ -1,6 +1,8 @@
 module Toke
   class SessionsController < ApplicationController
 
+    before_action :toke, only: :destroy
+
     def create
       user = User.find_by_username(params[:session][:username])   
       if user && user.authenticate(params[:session][:password])

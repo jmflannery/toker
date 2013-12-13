@@ -38,26 +38,39 @@ module Toke
     describe 'DELETE destroy' do
     
       let(:current_user) { FactoryGirl.create(:user) }
-      let!(:token) { FactoryGirl.create(:token, user: current_user) }
+      let(:token) { FactoryGirl.create(:token, user: current_user) }
 
-      context "given a valid Token id" do
+      context "with a valid Toke key in the header" do
 
-        it "returns 204 No Content" do
-          delete :destroy, id: token, use_route: 'toke'
-          expect(response.status).to eq 204
+        before do request.headers['X-Toke-Key'] = token.key end
+
+        context "with a valid Token id" do
+
+          it "returns 204 No Content" do
+            delete :destroy, id: token, use_route: 'toke'
+            expect(response.status).to eq 204
+          end
+
+          it "destroys the current_user's token" do
+            delete :destroy, id: token, use_route: 'toke'
+            expect(Token.exists?(token.id)).to be_false
+          end
         end
 
-        it "destroys the current_user's token" do
-          delete :destroy, id: token, use_route: 'toke'
-          expect(Token.exists?(token.id)).to be_false
+        context "given an invalid Token id" do
+
+          it "returns 404 Not Found" do
+            delete :destroy, id: 0, use_route: 'toke'
+            expect(response.status).to eq 404
+          end
         end
       end
+      
+      context "with no Toke key in the header and a valid token id" do
 
-      context "given an invalid Token id" do
-
-        it "returns 404 Not Found" do
-          delete :destroy, id: 0, use_route: 'toke'
-          expect(response.status).to eq 404
+        it "returns 401 Unauthorized" do
+          delete :destroy, id: token, use_route: 'toke'
+          expect(response.status).to equal 401
         end
       end
     end
