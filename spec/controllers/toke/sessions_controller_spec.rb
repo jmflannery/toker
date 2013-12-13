@@ -12,11 +12,9 @@ module Toke
 
         let(:sesh) {{ username: user.username, password: 'secret' }}
 
-        it "returns the users token" do
+        it "returns the authenticated user with embedded token in JSON format" do
           post :create, session: sesh, use_route: 'toke'
-          user.reload
-          expect(response.body).to match \
-            /^{"token":{"id":#{user.token.id},"key":"#{user.token.key}","expires_at":"#{user.token.expires_at.to_s(:db)}","user_id":#{user.id}}}$/
+          expect(response.body).to eq UserSerializer.new(user.reload).to_json
         end
       end
     end
