@@ -23,4 +23,15 @@ describe "Sessions" do
       end
     end
   end
+
+  describe "destroy Session" do
+
+    let(:current_user) { FactoryGirl.create(:user) }
+    let(:token) { FactoryGirl.create(:token, user: current_user) }
+
+    it "destroys the token and returns 204 No Content" do
+      delete "toke/sessions/#{token.id}"
+      expect(Toke::Token.exists?(token.id)).to be_false
+    end
+  end
 end

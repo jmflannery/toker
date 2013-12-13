@@ -8,5 +8,15 @@ module Toke
         render json: user, status: 201
       end
     end
+
+    def destroy
+      token = Token.find_by(id: params[:id])
+      if token
+        token.destroy
+        head :no_content
+      else
+        head :not_found
+      end
+    end
   end
 end

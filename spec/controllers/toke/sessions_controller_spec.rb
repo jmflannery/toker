@@ -18,5 +18,32 @@ module Toke
         end
       end
     end
+
+    describe 'DELETE destroy' do
+    
+      let(:current_user) { FactoryGirl.create(:user) }
+      let!(:token) { FactoryGirl.create(:token, user: current_user) }
+
+      context "given a valid Token id" do
+
+        it "returns 204 No Content" do
+          delete :destroy, id: token, use_route: 'toke'
+          expect(response.status).to eq 204
+        end
+
+        it "destroys the current_user's token" do
+          delete :destroy, id: token, use_route: 'toke'
+          expect(Token.exists?(token.id)).to be_false
+        end
+      end
+
+      context "given an invalid Token id" do
+
+        it "returns 404 Not Found" do
+          delete :destroy, id: 0, use_route: 'toke'
+          expect(response.status).to eq 404
+        end
+      end
+    end
   end
 end
