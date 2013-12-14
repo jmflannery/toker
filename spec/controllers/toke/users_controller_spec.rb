@@ -79,30 +79,73 @@ module Toke
 
     describe "GET index" do
 
-      it "returns 200 status" do
-        json = double('json')
-        User.should_receive(:all).and_return(json)
-        get :index, use_route: 'toke'
-        expect(response.status).to eq 200
+      let(:current_user) { FactoryGirl.create(:user) }
+      let(:another_user) { FactoryGirl.create(:user) }
+
+      describe "with a valid Toke key in the header" do
+
+        let!(:users) { [current_user, another_user] }
+        let(:token) { FactoryGirl.create(:token, user: current_user) }
+
+        before do request.headers['X-Toke-Key'] = token.key end
+
+        it "responds with 200 OK" do
+          get :index, use_route: 'toke'
+          expect(response.status).to eq 200
+        end
+
+        it "responds with all the users in JSON format" do
+          get :index, use_route: 'toke'
+          serializer = ActiveModel::ArraySerializer.new(users, each_serializer: UserSerializer)
+          expect(response.body).to eq({ users: serializer }.to_json)
+        end
       end
 
-      it "gets renders all the users as JSON" do
-        json = double('json')
-        User.should_receive(:all).and_return(json)
-        controller.should_receive(:render).with(json: json)
-        controller.should_receive(:render)
-        get :index, use_route: 'toke'
+      describe "with an invalid Toke key in the header" do
+
+        let(:token_key) { "2f9v" * 8 }
+        before do request.headers['X-Toke-Key'] = token_key end
+
+        it "responds with 401 Unauthorized" do
+          get :index, use_route: 'toke'
+          expect(response.status).to eq 401
+        end
       end
     end
 
     describe "GET show" do
 
-      it "finds and renders the given user" do
-        user = double('user')
-        User.should_receive(:find).with('22').and_return(user)
-        controller.should_receive(:render).with(json: user)
-        controller.should_receive(:render)
-        get :show, id: 22, use_route: 'toke'
+      let(:current_user) { FactoryGirl.create(:user) }
+      let(:user) { FactoryGirl.create(:user) }
+
+      describe "with a valid Toke key in the header" do
+
+        let(:token) { FactoryGirl.create(:token, user: current_user) }
+        before do request.headers['X-Toke-Key'] = token.key end
+
+        it "responds with 200 OK" do
+          get :show, id: user, use_route: 'toke'
+          expect(response.status).to eq 200
+        end
+
+        it "responds with the given user in JSON format" do
+          get :show, id: user, use_route: 'toke'
+          expect(response.body).to eq UserSerializer.new(user).to_json
+        end
+      end
+
+      context "with an expired Toke key in the header" do
+
+        let(:token) { FactoryGirl.create(:token, user: current_user) }
+        before do
+          token.update(expires_at: 1.second.ago)
+          request.headers['X-Toke-Key'] = token.key
+        end
+
+        it "responds with 401 Unauthorized" do
+          get :show, id: current_user, use_route: 'toke'
+          expect(response.status).to eq 401
+        end
       end
     end
   end

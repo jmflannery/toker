@@ -2,7 +2,7 @@ module Toke
 
   class UsersController < ApplicationController
 
-    before_action :toke, only: :create
+    before_action :toke
 
     def create
       user = User.new(person_params)
