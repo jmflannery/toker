@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.version     = Toke::VERSION
   s.authors     = ["Jack Flannery"]
   s.email       = ["jmflannery81@gmail.com"]
-  s.homepage    = "TODO"
+  s.homepage    = "https://github.com/jmflannery/toke"
   s.summary     = "Toke is a simple token authentication solution designed for a rails api."
   s.description = "Toke is a rails engine that can be used in a rails api to provide simple token authentication." 
 
