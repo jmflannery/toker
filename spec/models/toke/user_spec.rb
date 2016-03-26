@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 module Toke
 
@@ -16,33 +16,47 @@ module Toke
     end
 
     it "is invalid without a username" do
-      expect(FactoryGirl.build(:user, username: nil)).to have(1).errors_on(:username)
+      user = FactoryGirl.build(:user, username: nil)
+      user.valid?
+      expect(user.errors[:username].size).to be >= 1
     end
 
     it "is invalid with a duplicate username" do
       FactoryGirl.create(:user, username: 'fred')
-      expect(FactoryGirl.build(:user, username: 'fred')).to have(1).errors_on(:username)
+      user = FactoryGirl.build(:user, username: 'fred')
+      user.valid?
+      expect(user.errors[:username].size).to be >= 1
     end
 
     it "is invalid without a password" do
-      expect(FactoryGirl.build(:user, password: nil)).to have(2).errors_on(:password)
+      user = FactoryGirl.build(:user, password: nil)
+      user.valid?
+      expect(user.errors[:password].size).to be >= 1
     end
 
     it "is invalid without a password_confirmation" do
-      expect(FactoryGirl.build(:user, password_confirmation: nil)).to have(1).errors_on(:password_confirmation)
+      user = FactoryGirl.build(:user, password: 'secret', password_confirmation: nil)
+      user.valid?
+      expect(user.errors[:password_confirmation].size).to be >= 1
     end
 
     it "is invalid if password_confirmation doesn't match password" do
-      expect(FactoryGirl.build(:user, password_confirmation: "wrong")).to have(1).errors_on(:password_confirmation)
+      user = FactoryGirl.build(:user, password_confirmation: "wrong")
+      user.valid?
+      expect(user.errors[:password_confirmation].size).to be >= 1
     end
 
     it "is invalid with a short password under 6 chars" do
-      expect(FactoryGirl.build(:user, password: "lesss", password_confirmation: "lesss")).to have(1).errors_on(:password)
+      user = FactoryGirl.build(:user, password: "lesss", password_confirmation: "lesss")
+      user.valid?
+      expect(user.errors[:password].size).to be >= 1
     end
 
     it "is invalid with a long password over 50 chars" do
       tolong = 's' * 51
-      expect(FactoryGirl.build(:user, password: tolong, password_confirmation: tolong)).to have(1).errors_on(:password)
+      user = FactoryGirl.build(:user, password: tolong, password_confirmation: tolong)
+      user.valid?
+      expect(user.errors[:password].size).to be >= 1
     end
 
     it "has a nil token initially" do

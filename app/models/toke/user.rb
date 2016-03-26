@@ -3,7 +3,8 @@ module Toke
     has_secure_password
 
     validates :username, presence: true, uniqueness: true
-    validates :password, length: { in: 6..50 }
+    validates :password, confirmation: true, length: { in: 6..50 }
+    validates :password_confirmation, presence: true
 
     has_one :token
 

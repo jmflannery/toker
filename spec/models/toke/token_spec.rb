@@ -1,15 +1,14 @@
-require 'spec_helper'
+require 'rails_helper'
 
 module Toke
 
   describe Token do
-    
     let(:user) { FactoryGirl.create(:user) }
     subject { Token.new(user: user) }
 
     let!(:now) { Time.now }
     before do
-      Time.stub(:now).and_return(now)
+      allow(Time).to receive(:now).and_return(now)
       subject.save
     end
 
@@ -18,7 +17,7 @@ module Toke
     end
 
     it "sets the token to expire in 4 hours" do
-      expect(subject.reload.expires_at).to eq (now + 4.hours).to_formatted_s(:rfc822)
+      expect(subject.reload.expires_at).to eq Time.zone.now + 4.hours
     end
 
     it "is expired if the current time is greater than the expires_at time" do

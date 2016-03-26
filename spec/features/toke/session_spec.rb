@@ -1,6 +1,6 @@
-require 'spec_helper'
+require 'rails_helper'
 
-OUTER_APP = Rack::Builder.parse_file(File.expand_path('../../../dummy/config.ru', __FILE__)).first
+OUTER_APP ||= Rack::Builder.parse_file(File.expand_path('../../../dummy/config.ru', __FILE__)).first
 
 describe "Sessions" do
 
@@ -34,7 +34,7 @@ describe "Sessions" do
       it "destroys the token and returns 204 No Content" do
         header "X-Toke-Key", token.key
         delete "toke/sessions/#{token.id}"
-        expect(Toke::Token.exists?(token.id)).to be_false
+        expect(Toke::Token.exists?(token.id)).to be false
       end
     end
   end

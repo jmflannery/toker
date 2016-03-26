@@ -1,8 +1,9 @@
-require 'spec_helper'
+require 'rails_helper'
 
 module Toke
 
   describe UsersController do
+    routes { Toke::Engine.routes }
 
     describe "POST create" do
 
@@ -19,22 +20,22 @@ module Toke
           let(:xuser) { double('user') }
 
           it "it responds with 201" do
-            post :create, user: valid_attrs, use_route: 'toke'
+            post :create, user: valid_attrs
             expect(response.status).to eq 201
           end
 
           it "creates a user" do
-            User.stub(:new).with(valid_attrs.stringify_keys).and_return(xuser)
-            xuser.should_receive(:save).and_return(true)
-            post :create, user: valid_attrs, use_route: 'toke'
+            allow(User).to receive(:new).with(valid_attrs.stringify_keys).and_return(xuser)
+            expect(xuser).to receive(:save).and_return(true)
+            post :create, user: valid_attrs
           end
 
           it "renders the user as JSON" do
-            User.stub(:new).with(valid_attrs.stringify_keys).and_return(xuser)
-            xuser.stub(:save).and_return(true)
-            controller.should_receive(:render).with(json: xuser, status: 201)
-            controller.should_receive(:render)
-            post :create, user: valid_attrs, use_route: 'toke'
+            allow(User).to receive(:new).with(valid_attrs.stringify_keys).and_return(xuser)
+            allow(xuser).to receive(:save).and_return(true)
+            expect(controller).to receive(:render).with(json: xuser, status: 201)
+            expect(controller).to receive(:render)
+            post :create, user: valid_attrs
           end
         end
 
@@ -43,12 +44,12 @@ module Toke
           let(:user_attrs) {{ username: 'ichiro', password: 'suzuki', password_confirmation: 'matsui' }}
 
           it "responds with 500" do
-            post :create, user: user_attrs, use_route: 'toke'
+            post :create, user: user_attrs
             expect(response.status).to eq 500
           end
 
           it "responds with a blank body" do
-            post :create, user: user_attrs, use_route: 'toke'
+            post :create, user: user_attrs
             expect(response.body).to be_blank
           end
         end
@@ -57,11 +58,11 @@ module Toke
       context "with no Toke key in the header" do
 
         it "returns 401 Unauthorized" do
-          post :create, user: valid_attrs, use_route: 'toke'
+          post :create, user: valid_attrs
           expect(response.status).to equal 401
         end
       end
- 
+
       context "with an expired Toke key in the header" do
 
         let(:token) { FactoryGirl.create(:token, user: user) }
@@ -71,7 +72,7 @@ module Toke
         end
 
         it "returns 401 Unauthorized" do
-          post :create, user: valid_attrs, use_route: 'toke'
+          post :create, user: valid_attrs
           expect(response.status).to equal 401
         end
       end
@@ -90,12 +91,12 @@ module Toke
         before do request.headers['X-Toke-Key'] = token.key end
 
         it "responds with 200 OK" do
-          get :index, use_route: 'toke'
+          get :index
           expect(response.status).to eq 200
         end
 
         it "responds with all the users in JSON format" do
-          get :index, use_route: 'toke'
+          get :index
           serializer = ActiveModel::ArraySerializer.new(users, each_serializer: UserSerializer)
           expect(response.body).to eq({ users: serializer }.to_json)
         end
@@ -107,7 +108,7 @@ module Toke
         before do request.headers['X-Toke-Key'] = token_key end
 
         it "responds with 401 Unauthorized" do
-          get :index, use_route: 'toke'
+          get :index
           expect(response.status).to eq 401
         end
       end
@@ -124,12 +125,12 @@ module Toke
         before do request.headers['X-Toke-Key'] = token.key end
 
         it "responds with 200 OK" do
-          get :show, id: user, use_route: 'toke'
+          get :show, id: user
           expect(response.status).to eq 200
         end
 
         it "responds with the given user in JSON format" do
-          get :show, id: user, use_route: 'toke'
+          get :show, id: user
           expect(response.body).to eq UserSerializer.new(user).to_json
         end
       end
@@ -143,7 +144,7 @@ module Toke
         end
 
         it "responds with 401 Unauthorized" do
-          get :show, id: current_user, use_route: 'toke'
+          get :show, id: current_user
           expect(response.status).to eq 401
         end
       end
