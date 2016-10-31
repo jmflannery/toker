@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-OUTER_APP ||= Rack::Builder.parse_file(File.expand_path('../../../dummy/config.ru', __FILE__)).first
+OUTER_APP ||= Rack::Builder.parse_file(File.expand_path('../../dummy/config.ru', __dir__)).first
 
 module Toke
 
