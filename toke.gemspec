@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.add_dependency "rails"
   s.add_dependency "bcrypt-ruby"
   s.add_dependency "active_model_serializers"
+  s.add_dependency "jwt"
 
   s.add_development_dependency "pg"
 

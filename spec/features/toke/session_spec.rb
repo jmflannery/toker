@@ -1,40 +1,155 @@
 require 'rails_helper'
 
-OUTER_APP ||= Rack::Builder.parse_file(File.expand_path('../../dummy/config.ru', __dir__)).first
-
 describe "Sessions" do
 
   include Rack::Test::Methods
 
-  let(:app) { OUTER_APP }
+  let(:app) { Rack::Builder.parse_file(File.expand_path('../../dummy/config.ru', __dir__)).first }
 
-  describe "Create" do
+  let(:current_user) { FactoryGirl.create(:user, email: 'nikki') }
 
-    context "given valid parameters" do
+  describe "Log In (with email and password)" do
 
-      let(:user) { Toke::User.create(username: 'nikki', password: 'secret', password_confirmation: 'secret') }
-      let(:sesh_attrs) {{ session: { username: user.username, password: 'secret' }}}
+    context "given valid credentials" do
 
-      it "returns a token that expires in 4 hours with 201 status" do
-        post 'toke/sessions', sesh_attrs
-        user.reload
-        expect(last_response.status).to be 201
-        expect(last_response.body).to eq %Q{{"user":{"id":#{user.id},"username":"nikki","token":{"id":#{user.token.id},"key":"#{user.token.key}","expires_at":"#{user.token.expires_at.to_s(:db)}","user_id":#{user.id}}}}}
+      before do
+        creds = ["#{current_user.email}:secret"].pack("m*")
+        header 'Authorization', "Basic #{creds}"
+      end
+
+      it 'returns 201 Created' do
+        post 'toke/login'
+        expect(last_response.status).to eq 201
+      end
+
+      it 'returns an Authorization Token in the header' do
+        post 'toke/login'
+        token_header = last_response.headers['Authorization']
+        expect(token_header).to match /\AToken .*\..*\..*\z/
+      end
+
+      it 'returns the user record in the body' do
+        post 'toke/login'
+        response_body = JSON.parse(last_response.body)['toke/user']
+        expect(response_body['email']).to eq current_user.email
+      end
+
+      it 'returns a unique token with each request' do
+        post 'toke/login'
+        previous_token = last_response.headers['Authorization'].split.last
+        post 'toke/login'
+        token = last_response.headers['Authorization'].split.last
+        expect(previous_token).not_to eq token
+      end
+
+      it 'makes previous tokens invalid' do
+        post 'toke/login'
+        previous_token = last_response.headers['Authorization'].split.last
+        post 'toke/login'
+        header 'Authorization', "Token #{previous_token}"
+        delete 'toke/logout'
+        expect(last_response.status).to eq 401
+      end
+    end
+
+    context 'with invalid credientials' do
+
+      before do
+        creds = ["#{current_user.email}:wrong"].pack("m*")
+        header 'Authorization', "Basic #{creds}"
+      end
+
+      it 'returns 401 Unathorized' do
+        post 'toke/login'
+        expect(last_response.status).to eq 401
+      end
+    end
+  end
+  describe 'Log In (with Token)' do
+
+    describe 'with a valid Token' do
+
+      let(:token) { FactoryGirl.create(:token, user: current_user, expires_at: 1.year.from_now) }
+
+      before do
+        token.generate_key!
+        token.save
+        header 'Authorization', "Bearer #{token.key}"
+      end
+
+      it 'returns 200 OK' do
+        put 'toke/login'
+        expect(last_response.status).to eq 200
+      end
+
+      it 'returns an Authorization Token in the header' do
+        put 'toke/login'
+        token_header = last_response.headers['Authorization']
+        expect(token_header).to match /\AToken .*\..*\..*\z/
+      end
+
+      it 'returns the user record in the body' do
+        put 'toke/login'
+        response_body = JSON.parse(last_response.body)['toke/user']
+        expect(response_body['email']).to eq current_user.email
+      end
+    end
+
+    describe 'with invalid credientials' do
+
+      before do
+        header 'Authorization', "Bearer wrong"
+      end
+
+      it 'returns 401 Unathorized' do
+        put 'toke/login'
+        expect(last_response.status).to eq 401
       end
     end
   end
 
-  describe "Destroy" do
+  describe "Log out" do
 
-    let(:current_user) { FactoryGirl.create(:user) }
-    let(:token) { FactoryGirl.create(:token, user: current_user) }
+    describe 'with a valid token' do
 
-    context 'with a valid Toke key in the header' do
+      let(:token) { FactoryGirl.create(:token, user: current_user, expires_at: 1.year.from_now) }
 
-      it "destroys the token and returns 204 No Content" do
-        header "X-Toke-Key", token.key
-        delete "toke/sessions/#{token.id}"
-        expect(Toke::Token.exists?(token.id)).to be false
+      before do
+        token.generate_key!
+        token.save
+        header 'Authorization', "Bearer #{token.key}"
+      end
+
+      it 'returns 204 No Content' do
+        delete 'toke/logout'
+        expect(last_response.status).to eq 204
+        expect(last_response.body).to be_blank
+      end
+
+      it 'causes the token to be invalid on the next request' do
+        delete 'toke/logout'
+        delete 'toke/logout'
+        expect(last_response.status).to eq 401
+        msg = JSON.parse(last_response.body)
+        expect(msg['Unauthorized']).to eq 'Token invalid'
+      end
+    end
+
+    describe 'with an invalid token' do
+
+      before do
+        header 'Authorization', "Bearer 123-bad-token-789"
+      end
+
+      it 'returns 401 Unathorized' do
+        delete 'toke/logout'
+        expect(last_response.status).to eq 401
+      end
+
+      it 'returns an error message' do
+        delete 'toke/logout'
+        msg = JSON.parse(last_response.body)
+        expect(msg['Unauthorized']).to eq 'Token invalid'
       end
     end
   end

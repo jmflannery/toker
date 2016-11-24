@@ -16,20 +16,20 @@ ActiveRecord::Schema.define(version: 20130908035917) do
   enable_extension "plpgsql"
 
   create_table "toke_tokens", force: :cascade do |t|
-    t.string   "key"
     t.integer  "user_id"
+    t.string   "key",        limit: 256
     t.datetime "expires_at"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.index ["key"], name: "index_toke_tokens_on_key", unique: true, using: :btree
     t.index ["user_id"], name: "index_toke_tokens_on_user_id", using: :btree
   end
 
   create_table "toke_users", force: :cascade do |t|
-    t.string   "username"
+    t.string   "email"
     t.string   "password_digest"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["email"], name: "index_toke_users_on_email", using: :btree
   end
 
 end

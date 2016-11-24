@@ -1,17 +1,25 @@
 module Toke
   class ApplicationController < ActionController::Base
+    protect_from_forgery with: :null_session
 
     def toke
-      head :unauthorized unless current_user
+      token = authenticate_with_http_token do |jwt, options|
+        token, error = Token.decode(jwt)
+        errors.merge!(error) if error
+        token
+      end
+      @user = token.user if token
+      render json: errors, status: :unauthorized unless @user
     end
 
     def current_user
-      token = Token.active.where(key: toke_key).first
-      token.user if token
+      @user
     end
 
-    def toke_key
-      request.headers['X-Toke-Key']
+    private
+
+    def errors
+      @errors ||= {}
     end
   end
 end

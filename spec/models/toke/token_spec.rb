@@ -1,33 +1,67 @@
 require 'rails_helper'
 
 module Toke
+  RSpec.describe Token, type: :model do
 
-  describe Token do
+    let(:expires_at) { 1.year.from_now }
     let(:user) { FactoryGirl.create(:user) }
-    subject { Token.new(user: user) }
 
-    let!(:now) { Time.now }
-    before do
-      allow(Time).to receive(:now).and_return(now)
-      subject.save
+    subject { FactoryGirl.create(:token, user: user, expires_at: expires_at) }
+
+    describe 'payload' do
+
+      it 'includes token_id and exp' do
+        expect(subject.payload[:token_id]).to eq subject.id
+        expect(subject.payload[:exp]).to eq expires_at.to_i
+      end
     end
 
-    it "sets the token key" do
-      expect(subject.key).to match /\S{32}/
+    describe 'generate_key!' do
+
+      it 'generates a json web token' do
+        expect(subject.key).to be_blank
+        subject.generate_key!
+        expect(subject.key).to match /\A.*\..*\..*\z/
+      end
     end
 
-    it "sets the token to expire in 4 hours" do
-      expect(subject.reload.expires_at).to eq Time.zone.now + 4.hours
-    end
+    describe 'decode' do
 
-    it "is expired if the current time is greater than the expires_at time" do
-      subject.update_attribute(:expires_at, 1.second.ago)
-      expect(subject).to be_expired
-    end
+      context 'given a valid JWT token' do
 
-    it "is not expired until the expires_at time is reached" do
-      subject.update_attribute(:expires_at, 1.second.from_now)
-      expect(subject).to_not be_expired
+        before(:each) do
+          subject.generate_key!
+          subject.save
+        end
+
+        it 'can decode a JWT token' do
+          token, error = Token.decode(subject.key)
+          expect(token.user.id).to eq user.id
+          expect(token.expires_at).to eq expires_at
+          expect(token.key).to eq subject.key
+        end
+      end
+
+      context 'given an expired token' do
+
+        before do
+          subject.expires_at = 1.minute.ago
+          subject.generate_key!
+        end
+
+        it 'returns an error message' do
+          token, error = Token.decode(subject.key)
+          expect(error[:Unauthorized]).to eq 'Token expired'
+        end
+      end
+
+      context 'given an invalid token' do
+
+        it 'returns an error message' do
+          token, error = Token.decode(subject.key)
+          expect(error[:Unauthorized]).to eq 'Token invalid'
+        end
+      end
     end
   end
 end

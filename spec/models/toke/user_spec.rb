@@ -15,17 +15,17 @@ module Toke
       expect(subject).to be_valid
     end
 
-    it "is invalid without a username" do
-      user = FactoryGirl.build(:user, username: nil)
+    it "is invalid without a email" do
+      user = FactoryGirl.build(:user, email: nil)
       user.valid?
-      expect(user.errors[:username].size).to be >= 1
+      expect(user.errors[:email].size).to be >= 1
     end
 
-    it "is invalid with a duplicate username" do
-      FactoryGirl.create(:user, username: 'fred')
-      user = FactoryGirl.build(:user, username: 'fred')
+    it "is invalid with a duplicate email" do
+      FactoryGirl.create(:user, email: 'fred@yo.net')
+      user = FactoryGirl.build(:user, email: 'fred@yo.net')
       user.valid?
-      expect(user.errors[:username].size).to be >= 1
+      expect(user.errors[:email].size).to be >= 1
     end
 
     it "is invalid without a password" do
@@ -57,16 +57,6 @@ module Toke
       user = FactoryGirl.build(:user, password: tolong, password_confirmation: tolong)
       user.valid?
       expect(user.errors[:password].size).to be >= 1
-    end
-
-    it "has a nil token initially" do
-      expect(subject.token).to be_nil
-    end
-
-    it "generates a token with 32 digit key" do
-      subject.save
-      subject.toke
-      expect(subject.reload.token.key).to match /\S{32}/      
     end
   end
 end

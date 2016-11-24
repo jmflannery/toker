@@ -1,27 +1,30 @@
 module Toke
   class Token < ActiveRecord::Base
     belongs_to :user
-    before_create :toke
 
-    scope :active, -> { where("expires_at >= ?", Time.now) }
-
-    def expired?
-      Time.now > self.expires_at
+    def generate_key!
+      self.key = JWT.encode payload, Rails.application.secrets.secret_key_base, 'HS256'
+      return self.key
     end
 
-    private
-
-    def toke
-      generate_token
-      set_expiry
+    def payload
+      {
+        token_id: id,
+        exp: expires_at.to_i
+      }
     end
 
-    def generate_token
-      self.key = SecureRandom.hex
-    end
-
-    def set_expiry(expiration = 4.hours.from_now)
-      self.expires_at = expiration
+    def self.decode(jwt)
+      begin
+        decoded_token = JWT.decode jwt, Rails.application.secrets.secret_key_base, 'HS256'
+        token_id = decoded_token[0]['token_id']
+        token = Token.find(token_id)
+      rescue JWT::ExpiredSignature
+        error = { Unauthorized: 'Token expired' }
+      rescue JWT::DecodeError, JWT::VerificationError, ActiveRecord::RecordNotFound
+        error = { Unauthorized: 'Token invalid' }
+      end
+      [token, error]
     end
   end
 end
