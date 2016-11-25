@@ -1,6 +1,6 @@
 module Toke
   class SessionsController < ApplicationController
-    before_action :toke, only: :destroy
+    before_action :toke!, only: :destroy
 
     def create
       @user = authenticate_with_http_basic do |email, password|
