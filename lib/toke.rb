@@ -6,14 +6,22 @@ module Toke
   module TokenAuthentication
     include ActionController::HttpAuthentication::Token::ControllerMethods
 
-    def toke!
+    def toke!(&unauthorized_handler)
       token = authenticate_with_http_token do |jwt, options|
         token, error = Token.decode(jwt)
         errors.merge!(error) if error
         token
       end
+
       @user = token.user if token
-      render json: errors, status: :unauthorized unless @user
+
+      unless @user
+        if block_given?
+          unauthorized_handler.call(errors)
+        else
+          render json: errors, status: :unauthorized
+        end
+      end
     end
 
     def current_user
@@ -23,7 +31,7 @@ module Toke
     private
 
     def errors
-      @errors ||= {}
+      @errors ||= { 'Unauthorized' => 'Token required' }
     end
   end
 end
