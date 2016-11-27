@@ -9,7 +9,7 @@ module Toke
 
     let(:current_user) { FactoryGirl.create(:user) }
 
-    describe 'Create' do
+    describe 'Register' do
 
       let(:user_attrs) {{ email: "jack@helo.net", password: "secret", password_confirmation: "secret" }}
       let(:token) { FactoryGirl.create(:token, user: current_user, expires_at: 1.year.from_now) }
@@ -25,7 +25,7 @@ module Toke
         context 'with valid user attributes' do
 
           it 'returns 201 Created with the user in JSON format' do
-            post "/toke/users", user: user_attrs
+            post "/toke/register", user: user_attrs
             expect(last_response.status).to eq 201
             user = JSON.parse(last_response.body)['toke/user'].symbolize_keys
             expect(user[:email]).to eq user_attrs[:email]
@@ -42,7 +42,7 @@ module Toke
         context 'with valid user attributes' do
 
           it 'returns 401 Unauthorized' do
-            post "/toke/users", user: user_attrs
+            post "/toke/register", user: user_attrs
             expect(last_response.status).to eq 401
           end
         end
