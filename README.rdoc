@@ -1,3 +1,0 @@
-= Toke
-
-Toke is a rails engine that provides a simple token authentication solution designed for a rails api.
