@@ -16,7 +16,7 @@ or in a your Gemfile:
 
 Toker uses two Active Record models: `Toker::User` and `Toker::Token`. `Users` have one (`has_one`) `Token` and `Tokens` belong to (`belong_to`) `Users`. The tables for the models are `toker_users` and `toker_tokens`. To copy the two migrations into your application's `db/migrate` directory, that will create these tables, run the following rake command:
 
-    rake install:toker:migrations
+    rake toker:install:migrations
 
 Feel free to add additional fields to these migrations, but be sure not to remove anything, all are required. Migrate your datebase as usual:
 
