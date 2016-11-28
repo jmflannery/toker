@@ -1,3 +1,3 @@
 class ApplicationController < ActionController::API
-  include Toke::TokenAuthentication
+  include Toker::TokenAuthentication
 end

@@ -22,21 +22,21 @@ ActiveRecord::Schema.define(version: 20161125174125) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "toke_tokens", force: :cascade do |t|
+  create_table "toker_tokens", force: :cascade do |t|
     t.integer  "user_id"
     t.string   "key",        limit: 256
     t.datetime "expires_at"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.index ["user_id"], name: "index_toke_tokens_on_user_id", using: :btree
+    t.index ["user_id"], name: "index_toker_tokens_on_user_id", using: :btree
   end
 
-  create_table "toke_users", force: :cascade do |t|
+  create_table "toker_users", force: :cascade do |t|
     t.string   "email"
     t.string   "password_digest"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.index ["email"], name: "index_toke_users_on_email", using: :btree
+    t.index ["email"], name: "index_toker_users_on_email", using: :btree
   end
 
 end

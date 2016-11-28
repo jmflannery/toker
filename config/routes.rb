@@ -1,4 +1,4 @@
-Toke::Engine.routes.draw do
+Toker::Engine.routes.draw do
   post 'register', to: 'users#create'
 
   post 'login', to: 'sessions#create'
