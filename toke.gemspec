@@ -7,13 +7,14 @@ require "toke/version"
 Gem::Specification.new do |s|
   s.name        = "toke"
   s.version     = Toke::VERSION
+  s.license     = 'MIT'
   s.authors     = ["Jack Flannery"]
-  s.email       = ["jmflannery81@gmail.com"]
+  s.email       = ["jack@grandtoursoftware.com"]
   s.homepage    = "https://github.com/jmflannery/toke"
   s.summary     = "Toke is a simple token authentication solution designed for a rails api."
-  s.description = "Toke is a rails engine that can be used in a rails api to provide simple token authentication. Toke can be used with or without Devise." 
+  s.description = "Toke is a rails engine that can be used in a rails api to provide simple token authentication." 
 
-  s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
+  s.files = Dir["{app,config,db,lib}/**/*", "LICENSE", "Rakefile", "README.md"]
   s.test_files = Dir["spec/**/*"]
 
   s.add_dependency "rails"
